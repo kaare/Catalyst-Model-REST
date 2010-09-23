@@ -11,6 +11,7 @@ WriteMakefile(
     PREREQ_PM => {
 		  'Catalyst::Model'			=> 0,
 		  'JSON::XS'				=> 0,
+		  'LWP::UserAgent'			=> 0,
 		  'HTTP::Request::Common'	=> 0,
 		  'Test::More'				=> 0,
 
