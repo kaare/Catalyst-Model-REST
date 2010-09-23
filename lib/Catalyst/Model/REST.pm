@@ -14,6 +14,8 @@ our $VERSION = '0.01';
 has 'server' => (
     isa => 'Str',
     is  => 'rw',
+	lazy    => 1,
+	builder => '_build_server',
 );
 has 'json' => (
     isa => 'Object',
@@ -30,11 +32,15 @@ has 'ua' => (
 	init_arg   => undef,
 );
 
+sub _build_server {
+    my ($self) = @_;
+    $self->{server} ||= $self->config->{server} if $self->config->{server};
+}
+
 sub _build_json {
     my ($self) = @_;
     $self->{json} = JSON::XS->new->utf8;
 }
-
 sub _build_ua {
     my ($self) = @_;
     $self->{ua} = LWP::UserAgent->new;
