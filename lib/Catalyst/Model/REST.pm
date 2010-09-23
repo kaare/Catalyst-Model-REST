@@ -81,13 +81,17 @@ You can pass the same configuration fields as when you call L<REST::Client>.
 
 =head1 METHODS
 
-=head2 REST
-
-All the methods not handled locally are forwarded to L<REST::Client>.
-
 =head2 new
 
 Called from Catalyst.
+
+=head2 post
+
+=head2 get
+
+=head2 put
+
+=head2 delete
 
 =head1 AUTHOR
 
