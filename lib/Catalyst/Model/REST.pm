@@ -79,30 +79,22 @@ Catalyst::Model::REST - REST model class for Catalyst
 
 =head1 SYNOPSIS
 
-    # model
-    __PACKAGE__->config(
-        uri => 'http://localhost:5984/',
-    );
+	# model
+	__PACKAGE__->config(
+		server => 'http://localhost:3000',
+	);
 
-    # controller
-    sub foo : Local {
-        my ($self, $c) = @_;
-
-        eval {
-            my $doc = $c->model('MyData')->database('foo')->newDoc('bar')->retrieve;
-            $c->stash->{thingie} = $doc->{dahut};
-        };
-        ...
-    }
+	# controller
+	sub foo : Local {
+		my ($self, $c) = @_;
+		my $doc = $c->model('MyData')->post('foo/bar/baz', {foo => 'bar'});
+		...
+	}
 
 
 =head1 DESCRIPTION
 
-This model class exposes L<REST::Client> as a Catalyst model.
-
-=head1 CONFIGURATION
-
-You can pass the same configuration fields as when you call L<REST::Client>.
+This model class makes REST connectivety easy.
 
 =head1 METHODS
 
@@ -120,7 +112,7 @@ Called from Catalyst.
 
 =head1 AUTHOR
 
-Kaare Rasmussen, <kaare @ cpan d.t com>
+Kaare Rasmussen, <kaare at cpan dot com>
 
 =head1 BUGS 
 
