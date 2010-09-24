@@ -5,7 +5,7 @@ use Moose;
 extends 'Catalyst::Model';
 
 use Carp qw(confess);
-use JSON::XS;
+use Catalyst::Model::REST::Serializer;
 use LWP::UserAgent;
 use HTTP::Request::Common;
 
@@ -17,11 +17,16 @@ has 'server' => (
 	lazy    => 1,
 	builder => '_build_server',
 );
-has 'json' => (
+has 'type' => (
+    isa => 'Str',
+    is  => 'rw',
+	default => 'json',
+);
+has 'serializer' => (
     isa => 'Object',
     is  => 'ro',
 	lazy    => 1,
-	builder => '_build_json',
+	builder => '_build_serializer',
 	init_arg   => undef,
 );
 has 'ua' => (
@@ -37,10 +42,11 @@ sub _build_server {
     $self->{server} ||= $self->config->{server} if $self->config->{server};
 }
 
-sub _build_json {
+sub _build_serializer {
     my ($self) = @_;
-    $self->{json} = JSON::XS->new->utf8;
+    $self->{serializer} = Catalyst::Model::REST::Serializer->new(type => $self->type);
 }
+
 sub _build_ua {
     my ($self) = @_;
     $self->{ua} = LWP::UserAgent->new;
@@ -50,29 +56,29 @@ sub _build_ua {
 sub post {
 	my ($self, $endpoint, $data) = @_;
 	my $uri = $self->server.$endpoint;
-	my $res = $self->ua->request(POST($uri, Content_Type => 'application/json', Content => $self->json->encode($data)));
-	return $self->json->decode($res->content);
+	my $res = $self->ua->request(POST($uri, Content_Type => 'application/json', Content => $self->serializer->encode($data)));
+	return $self->serializer->decode($res->content);
 }
 
 sub get {
 	my ($self, $endpoint, $data) = @_;
 	my $uri = $self->server.$endpoint;
-	my $res = $self->ua->request(GET($uri, Content_Type => 'application/json', Content => $self->json->encode($data)));
-	return $self->json->decode($res->content);
+	my $res = $self->ua->request(GET($uri, Content_Type => 'application/json', Content => $self->serializer->encode($data)));
+	return $self->serializer->decode($res->content);
 }
 
 sub put {
 	my ($self, $endpoint, $data) = @_;
 	my $uri = $self->server.$endpoint;
-	my $res = $self->ua->request(PUT($uri, Content_Type => 'application/json', Content => $self->json->encode($data)));
-	return $self->json->decode($res->content);
+	my $res = $self->ua->request(PUT($uri, Content_Type => 'application/json', Content => $self->serializer->encode($data)));
+	return $self->serializer->decode($res->content);
 }
 
 sub delete {
 	my ($self, $endpoint, $data) = @_;
 	my $uri = $self->server.$endpoint;
-	my $res = $self->ua->request(DELETE($uri, Content_Type => 'application/json', Content => $self->json->encode($data)));
-	return $self->json->decode($res->content);
+	my $res = $self->ua->request(DELETE($uri, Content_Type => 'application/json', Content => $self->serializer->encode($data)));
+	return $self->serializer->decode($res->content);
 }
 
 1;

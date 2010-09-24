@@ -1,4 +1,8 @@
 Necessary:
 
+- type - enum: json, yaml, ...
+- Wrapper modules for generic treatment of serializers
+  Catalyst::Model::REST::Serializer::JSON
+  Catalyst::Model::REST::Serializer::YAML
 - More serializers: YAML, XML, ...
 - Error handling
