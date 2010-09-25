@@ -1,6 +1,7 @@
 package Catalyst::Model::REST;
 use 5.010;
 use Moose;
+use Moose::Util::TypeConstraints;
 
 extends 'Catalyst::Model';
 
@@ -18,7 +19,7 @@ has 'server' => (
 	builder => '_build_server',
 );
 has 'type' => (
-    isa => 'Str',
+    isa => enum ([qw/json yaml/]),
     is  => 'rw',
 	default => 'json',
 );
@@ -37,6 +38,8 @@ has 'ua' => (
 	init_arg   => undef,
 );
 
+no Moose::Util::TypeConstraints;
+
 sub _build_server {
     my ($self) = @_;
     $self->{server} ||= $self->config->{server} if $self->config->{server};
@@ -44,7 +47,10 @@ sub _build_server {
 
 sub _build_serializer {
     my ($self) = @_;
-    $self->{serializer} = Catalyst::Model::REST::Serializer->new(type => $self->type);
+    my $role = 'Catalyst::Model::REST::Serializer::' . uc $self->type;
+    $self->{serializer} = Catalyst::Model::REST::Serializer->
+		with_traits($role)->
+		new(type => $self->type);
 }
 
 sub _build_ua {
@@ -56,30 +62,44 @@ sub _build_ua {
 sub post {
 	my ($self, $endpoint, $data) = @_;
 	my $uri = $self->server.$endpoint;
-	my $res = $self->ua->request(POST($uri, Content_Type => 'application/json', Content => $self->serializer->encode($data)));
+	my $res = $self->ua->request(POST($uri,
+		Content_Type => $self->serializer->content_type,
+		Content => $self->serializer->encode($data)
+	));
 	return $self->serializer->decode($res->content);
 }
 
 sub get {
 	my ($self, $endpoint, $data) = @_;
 	my $uri = $self->server.$endpoint;
-	my $res = $self->ua->request(GET($uri, Content_Type => 'application/json', Content => $self->serializer->encode($data)));
+	my $res = $self->ua->request(GET($uri,
+		Content_Type => $self->serializer->content_type,
+		Content => $self->serializer->encode($data)
+	));
 	return $self->serializer->decode($res->content);
 }
 
 sub put {
 	my ($self, $endpoint, $data) = @_;
 	my $uri = $self->server.$endpoint;
-	my $res = $self->ua->request(PUT($uri, Content_Type => 'application/json', Content => $self->serializer->encode($data)));
+	my $res = $self->ua->request(PUT($uri,
+		Content_Type => $self->serializer->content_type,
+		Content => $self->serializer->encode($data)
+	));
 	return $self->serializer->decode($res->content);
 }
 
 sub delete {
 	my ($self, $endpoint, $data) = @_;
 	my $uri = $self->server.$endpoint;
-	my $res = $self->ua->request(DELETE($uri, Content_Type => 'application/json', Content => $self->serializer->encode($data)));
+	my $res = $self->ua->request(DELETE($uri,
+		Content_Type => $self->serializer->content_type,
+		Content => $self->serializer->encode($data)
+	));
 	return $self->serializer->decode($res->content);
 }
+
+__PACKAGE__->meta->make_immutable;
 
 1;
 
@@ -94,6 +114,7 @@ Catalyst::Model::REST - REST model class for Catalyst
 	# model
 	__PACKAGE__->config(
 		server => 'http://localhost:3000',
+		tyoe   => 'json',
 	);
 
 	# controller
