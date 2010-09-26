@@ -4,7 +4,7 @@ use inc::Module::Install;
 use Module::Install::AuthorRequires;
 use Module::Install::AuthorTests;
 
-perl_version '5.8.1';
+perl_version '5.10.0';
 
 name 'Catalyst-Model-REST';
 all_from 'lib/Catalyst/Model/REST.pm';
