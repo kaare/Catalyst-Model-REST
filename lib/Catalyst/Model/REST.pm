@@ -10,7 +10,7 @@ use Catalyst::Model::REST::Serializer;
 use LWP::UserAgent;
 use HTTP::Request::Common;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 has 'server' => (
     isa => 'Str',

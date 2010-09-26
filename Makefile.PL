@@ -1,21 +1,42 @@
 use strict;
 use warnings;
-use ExtUtils::MakeMaker;
+use inc::Module::Install;
+use Module::Install::AuthorRequires;
+use Module::Install::AuthorTests;
 
-WriteMakefile(
-    NAME                => 'Catalyst::Model::REST',
-    AUTHOR              => 'Kaare Rasmussen <kaare@cpan.org>',
-    VERSION_FROM        => 'lib/Catalyst/Model/REST.pm',
-    ABSTRACT_FROM       => 'lib/Catalyst/Model/REST.pm',
-    PL_FILES            => {},
-    PREREQ_PM => {
-		  'Catalyst::Model'			=> 0,
-		  'JSON::XS'				=> 0,
-		  'LWP::UserAgent'			=> 0,
-		  'HTTP::Request::Common'	=> 0,
-		  'Carp'					=> 0,
-		  'Test::More'				=> 0,
-		 },
-    dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-    clean               => { FILES => 'Catalyst-Model-REST-*' },
-);
+perl_version '5.8.1';
+
+name 'Catalyst-Model-REST';
+all_from 'lib/Catalyst/Model/REST.pm';
+
+requires 'Moose';
+requires('Catalyst::Model'			=> '0');
+requires('JSON::XS'					=> '2.2222');
+requires('LWP::UserAgent'			=> '0');
+requires('HTTP::Request::Common'	=> '0');
+
+test_requires 'Test::More' => '0.88';
+
+author_requires 'Test::Pod' => 1.14;
+author_requires 'Module::Info';
+author_requires 'File::Find::Rule';
+
+feature 'YAML (application/yaml) support',
+	-default   => 0,
+	'JSON'     => '2.12';
+	'YAML::Syck' => '0.67';
+
+author_requires 'YAML::Syck' => '0.67';
+
+auto_include;
+auto_install;
+
+if ($Module::Install::AUTHOR) {
+	system("pod2text lib/Catalyst/Model/REST.pm > README")
+		and die $!;
+}
+
+repository 'git://github.com/kaare/Catalyst-Model-REST.git';
+
+WriteAll;
+

@@ -1,8 +1,9 @@
-Necessary:
+0.01 - 0.09: Alpha
+	Api and internals may change
 
-- type - enum: json, yaml, ...
-- Wrapper modules for generic treatment of serializers
-  Catalyst::Model::REST::Serializer::JSON
-  Catalyst::Model::REST::Serializer::YAML
-- More serializers: YAML, XML, ...
 - Error handling
+  Handle situation when getting non-decoded content back
+- Different decoders.
+  Possible to send json and receive yaml?
+
+0.10 - ?: Beta
