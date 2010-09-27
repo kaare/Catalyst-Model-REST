@@ -5,6 +5,8 @@
   Handle situation when getting non-decoded content back
 - Different serializers
   If possible to send json and receive yaml - hash of lazy serializer objects
-  
+  Try http://github.com/robinsmidsrod/Data-Serializable
+- Installer
+  Try dist:::zilla  
 
 0.10 - ?: Beta
