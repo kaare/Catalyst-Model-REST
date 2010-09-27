@@ -114,7 +114,7 @@ Catalyst::Model::REST - REST model class for Catalyst
 	# model
 	__PACKAGE__->config(
 		server => 'http://localhost:3000',
-		tyoe   => 'json',
+		type   => 'json',
 	);
 
 	# controller
