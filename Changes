@@ -1,5 +1,8 @@
 Revision history for Catalyst-Model-REST
 
+0.04 29 September 2010
+	Only deserialize if OK response
+
 0.03 29 September 2010
 	Added code, response ro atributes
 
