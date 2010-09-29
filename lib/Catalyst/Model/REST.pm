@@ -75,8 +75,7 @@ sub post {
 	));
 	$self->{code} = $res->code;
 	$self->{response} = $res;
-	my $content = $self->{code} < 300 ? $res->content : '';
-	return $self->serializer->decode($content);
+	return $self->{code} < 300 ? $self->serializer->decode($res->content) : {};
 }
 
 sub get {
@@ -88,8 +87,7 @@ sub get {
 	));
 	$self->{code} = $res->code;
 	$self->{response} = $res;
-	my $content = $self->{code} < 300 ? $res->content : '';
-	return $self->serializer->decode($content);
+	return $self->{code} < 300 ? $self->serializer->decode($res->content) : {};
 }
 
 sub put {
@@ -101,8 +99,7 @@ sub put {
 	));
 	$self->{code} = $res->code;
 	$self->{response} = $res;
-	my $content = $self->{code} < 300 ? $res->content : '';
-	return $self->serializer->decode($content);
+	return $self->{code} < 300 ? $self->serializer->decode($res->content) : {};
 }
 
 sub delete {
@@ -114,8 +111,7 @@ sub delete {
 	));
 	$self->{code} = $res->code;
 	$self->{response} = $res;
-	my $content = $self->{code} < 300 ? $res->content : '';
-	return $self->serializer->decode($content);
+	return $self->{code} < 300 ? $self->serializer->decode($res->content) : {};
 }
 
 __PACKAGE__->meta->make_immutable;
