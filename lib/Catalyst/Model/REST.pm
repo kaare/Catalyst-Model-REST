@@ -7,10 +7,11 @@ extends 'Catalyst::Model';
 
 use Carp qw(confess);
 use Catalyst::Model::REST::Serializer;
+use Catalyst::Model::REST::Response;
 use LWP::UserAgent;
 use HTTP::Request::Common;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 has 'server' => (
     isa => 'Str',
@@ -36,14 +37,6 @@ has 'ua' => (
 	lazy    => 1,
 	builder => '_build_ua',
 	init_arg   => undef,
-);
-has 'code' => (
-    isa => 'Int',
-    is  => 'ro',
-);
-has 'response' => (
-    isa => 'Object',
-    is  => 'ro',
 );
 
 no Moose::Util::TypeConstraints;
@@ -73,9 +66,12 @@ sub post {
 		Content_Type => $self->serializer->content_type,
 		Content => $self->serializer->encode($data)
 	));
-	$self->{code} = $res->code;
-	$self->{response} = $res;
-	return $self->{code} < 300 ? $self->serializer->decode($res->content) : {};
+	my $content = $res->code < 300 ? $self->serializer->decode($res->content) : {};
+	return Catalyst::Model::REST::Response->new(
+		code => $res->code,
+		response => $res,
+		data => $content,
+	);
 }
 
 sub get {
@@ -85,9 +81,12 @@ sub get {
 		Content_Type => $self->serializer->content_type,
 		Content => $self->serializer->encode($data)
 	));
-	$self->{code} = $res->code;
-	$self->{response} = $res;
-	return $self->{code} < 300 ? $self->serializer->decode($res->content) : {};
+	my $content = $res->code < 300 ? $self->serializer->decode($res->content) : {};
+	return Catalyst::Model::REST::Response->new(
+		code => $res->code,
+		response => $res,
+		data => $content,
+	);
 }
 
 sub put {
@@ -97,9 +96,12 @@ sub put {
 		Content_Type => $self->serializer->content_type,
 		Content => $self->serializer->encode($data)
 	));
-	$self->{code} = $res->code;
-	$self->{response} = $res;
-	return $self->{code} < 300 ? $self->serializer->decode($res->content) : {};
+	my $content = $res->code < 300 ? $self->serializer->decode($res->content) : {};
+	return Catalyst::Model::REST::Response->new(
+		code => $res->code,
+		response => $res,
+		data => $content,
+	);
 }
 
 sub delete {
@@ -109,9 +111,12 @@ sub delete {
 		Content_Type => $self->serializer->content_type,
 		Content => $self->serializer->encode($data)
 	));
-	$self->{code} = $res->code;
-	$self->{response} = $res;
-	return $self->{code} < 300 ? $self->serializer->decode($res->content) : {};
+	my $content = $res->code < 300 ? $self->serializer->decode($res->content) : {};
+	return Catalyst::Model::REST::Response->new(
+		code => $res->code,
+		response => $res,
+		data => $content,
+	);
 }
 
 __PACKAGE__->meta->make_immutable;

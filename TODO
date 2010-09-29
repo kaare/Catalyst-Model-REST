@@ -9,10 +9,6 @@
 - Installer
   Try dist:::zilla  
 
-
-0.05
-- Return response object instead of keeping state
-
 0.10 - ?: Beta
 - Find a way to overwrite request object so it will be possible to use in 
   controller tests (?)

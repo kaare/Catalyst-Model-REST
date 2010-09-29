@@ -1,5 +1,8 @@
 Revision history for Catalyst-Model-REST
 
+0.05 xx xxx 2010
+	Return a response object instead of a hashref from the REST methods
+
 0.04 29 September 2010
 	Only deserialize if OK response
 
