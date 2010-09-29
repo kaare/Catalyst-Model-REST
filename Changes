@@ -1,5 +1,8 @@
 Revision history for Catalyst-Model-REST
 
+0.03 29 September 2010
+	Added code, response ro atributes
+
 0.02 26 September 2010
 	Serializers, now two; json and yaml. Implemented as roles and controlled w/an enum
 	Makefile.PL rearranged

@@ -26,6 +26,12 @@ METHODS
   get
   put
   delete
+  code
+    Returns the http code of the latest request
+
+  response
+    Returns the latest response
+
 AUTHOR
     Kaare Rasmussen, <kaare at cpan dot com>
 

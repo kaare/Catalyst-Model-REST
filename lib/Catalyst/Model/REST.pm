@@ -10,7 +10,7 @@ use Catalyst::Model::REST::Serializer;
 use LWP::UserAgent;
 use HTTP::Request::Common;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 has 'server' => (
     isa => 'Str',
@@ -37,6 +37,14 @@ has 'ua' => (
 	builder => '_build_ua',
 	init_arg   => undef,
 );
+has 'code' => (
+    isa => 'Int',
+    is  => 'ro',
+);
+has 'response' => (
+    isa => 'Object',
+    is  => 'ro',
+);
 
 no Moose::Util::TypeConstraints;
 
@@ -56,7 +64,6 @@ sub _build_serializer {
 sub _build_ua {
     my ($self) = @_;
     $self->{ua} = LWP::UserAgent->new;
-
 }
 
 sub post {
@@ -66,6 +73,8 @@ sub post {
 		Content_Type => $self->serializer->content_type,
 		Content => $self->serializer->encode($data)
 	));
+	$self->{code} = $res->code;
+	$self->{response} = $res;
 	return $self->serializer->decode($res->content);
 }
 
@@ -76,6 +85,8 @@ sub get {
 		Content_Type => $self->serializer->content_type,
 		Content => $self->serializer->encode($data)
 	));
+	$self->{code} = $res->code;
+	$self->{response} = $res;
 	return $self->serializer->decode($res->content);
 }
 
@@ -86,6 +97,8 @@ sub put {
 		Content_Type => $self->serializer->content_type,
 		Content => $self->serializer->encode($data)
 	));
+	$self->{code} = $res->code;
+	$self->{response} = $res;
 	return $self->serializer->decode($res->content);
 }
 
@@ -96,6 +109,8 @@ sub delete {
 		Content_Type => $self->serializer->content_type,
 		Content => $self->serializer->encode($data)
 	));
+	$self->{code} = $res->code;
+	$self->{response} = $res;
 	return $self->serializer->decode($res->content);
 }
 
@@ -142,6 +157,14 @@ Called from Catalyst.
 =head2 put
 
 =head2 delete
+
+=head2 code
+
+Returns the http code of the latest request
+
+=head2 response
+
+Returns the latest response
 
 =head1 AUTHOR
 
