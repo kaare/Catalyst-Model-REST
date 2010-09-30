@@ -140,7 +140,9 @@ Catalyst::Model::REST - REST model class for Catalyst
 	# controller
 	sub foo : Local {
 		my ($self, $c) = @_;
-		my $doc = $c->model('MyData')->post('foo/bar/baz', {foo => 'bar'});
+		my $res = $c->model('MyData')->post('foo/bar/baz', {foo => 'bar'});
+		my $code = $res->code;
+		my $data = $res->data;
 		...
 	}
 
@@ -162,14 +164,6 @@ Called from Catalyst.
 =head2 put
 
 =head2 delete
-
-=head2 code
-
-Returns the http code of the latest request
-
-=head2 response
-
-Returns the latest response
 
 =head1 AUTHOR
 
