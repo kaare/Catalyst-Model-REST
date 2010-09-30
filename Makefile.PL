@@ -14,6 +14,7 @@ requires('Catalyst::Model'			=> '0');
 requires('JSON::XS'					=> '2.2222');
 requires('LWP::UserAgent'			=> '0');
 requires('HTTP::Request::Common'	=> '0');
+requires('Data::Serializable'		=> '0.40.0');
 
 test_requires 'Test::More' => '0.88';
 
