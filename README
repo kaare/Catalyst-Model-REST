@@ -11,7 +11,9 @@ SYNOPSIS
             # controller
             sub foo : Local {
                     my ($self, $c) = @_;
-                    my $doc = $c->model('MyData')->post('foo/bar/baz', {foo => 'bar'});
+                    my $res = $c->model('MyData')->post('foo/bar/baz', {foo => 'bar'});
+                    my $code = $res->code;
+                    my $data = $res->data;
                     ...
             }
 
@@ -26,12 +28,6 @@ METHODS
   get
   put
   delete
-  code
-    Returns the http code of the latest request
-
-  response
-    Returns the latest response
-
 AUTHOR
     Kaare Rasmussen, <kaare at cpan dot com>
 
