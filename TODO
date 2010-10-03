@@ -1,15 +1,14 @@
-0.01 - 0.09: Alpha
-	Api and internals may change
+0.01 - 0.05: Alpha
+0.06 - 0-10; Beta
+	Api and internals may still change, but changes are smaller now.
 
+Misc
 - Error handling
   Handle situation when getting non-decoded content back
-- Different serializers
-  If possible to send json and receive yaml - hash of lazy serializer objects
-  Try http://github.com/robinsmidsrod/Data-Serializable
+- Serializers
+  Is it possible to send json and receive yaml? Should I handle it?
 - Installer
   Try dist:::zilla  
-
-0.10 - ?: Beta
 - Find a way to overwrite request object so it will be possible to use in 
   controller tests (?)
   Look at Catalyst::Test.

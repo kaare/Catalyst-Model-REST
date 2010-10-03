@@ -1,5 +1,9 @@
 Revision history for Catalyst-Model-REST
 
+0.06 3 October 2010
+	Implements serializers through Data::Serializable. THis makes it much easier
+	to add a new serializer if needed.
+
 0.05 30 September 2010
 	Return a response object instead of a hashref from the REST methods
 

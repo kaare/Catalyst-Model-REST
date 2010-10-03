@@ -11,7 +11,7 @@ use Catalyst::Model::REST::Response;
 use LWP::UserAgent;
 use HTTP::Request::Common;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 has 'server' => (
     isa => 'Str',
@@ -24,20 +24,6 @@ has 'type' => (
     is  => 'rw',
 	default => 'json',
 );
-has 'serializer' => (
-    isa => 'Object',
-    is  => 'ro',
-	lazy    => 1,
-	builder => '_build_serializer',
-	init_arg   => undef,
-);
-has 'ua' => (
-    isa => 'Object',
-    is  => 'ro',
-	lazy    => 1,
-	builder => '_build_ua',
-	init_arg   => undef,
-);
 
 no Moose::Util::TypeConstraints;
 
@@ -46,12 +32,10 @@ sub _build_server {
     $self->{server} ||= $self->config->{server} if $self->config->{server};
 }
 
-sub _build_serializer {
+sub _serializer {
     my ($self) = @_;
-    my $role = 'Catalyst::Model::REST::Serializer::' . uc $self->type;
-    $self->{serializer} = Catalyst::Model::REST::Serializer->
-		with_traits($role)->
-		new(type => $self->type);
+    my $type = $self->type;
+    $self->{serializer}{$self->type} = Catalyst::Model::REST::Serializer->new(type => $type);
 }
 
 sub _build_ua {
@@ -63,10 +47,10 @@ sub post {
 	my ($self, $endpoint, $data) = @_;
 	my $uri = $self->server.$endpoint;
 	my $res = $self->ua->request(POST($uri,
-		Content_Type => $self->serializer->content_type,
-		Content => $self->serializer->encode($data)
+		Content_Type => $self->_serializer->content_type,
+		Content => $self->_serializer->serialize($data)
 	));
-	my $content = $res->code < 300 ? $self->serializer->decode($res->content) : {};
+	my $content = $res->code < 300 ? $self->_serializer->deserialize($res->content) : {};
 	return Catalyst::Model::REST::Response->new(
 		code => $res->code,
 		response => $res,
@@ -78,10 +62,10 @@ sub get {
 	my ($self, $endpoint, $data) = @_;
 	my $uri = $self->server.$endpoint;
 	my $res = $self->ua->request(GET($uri,
-		Content_Type => $self->serializer->content_type,
-		Content => $self->serializer->encode($data)
+		Content_Type => $self->_serializer->content_type,
+		Content => $self->_serializer->serialize($data)
 	));
-	my $content = $res->code < 300 ? $self->serializer->decode($res->content) : {};
+	my $content = $res->code < 300 ? $self->_serializer->deserialize($res->content) : {};
 	return Catalyst::Model::REST::Response->new(
 		code => $res->code,
 		response => $res,
@@ -93,10 +77,10 @@ sub put {
 	my ($self, $endpoint, $data) = @_;
 	my $uri = $self->server.$endpoint;
 	my $res = $self->ua->request(PUT($uri,
-		Content_Type => $self->serializer->content_type,
-		Content => $self->serializer->encode($data)
+		Content_Type => $self->_serializer->content_type,
+		Content => $self->_serializer->serialize($data)
 	));
-	my $content = $res->code < 300 ? $self->serializer->decode($res->content) : {};
+	my $content = $res->code < 300 ? $self->_serializer->deserialize($res->content) : {};
 	return Catalyst::Model::REST::Response->new(
 		code => $res->code,
 		response => $res,
@@ -108,10 +92,10 @@ sub delete {
 	my ($self, $endpoint, $data) = @_;
 	my $uri = $self->server.$endpoint;
 	my $res = $self->ua->request(DELETE($uri,
-		Content_Type => $self->serializer->content_type,
-		Content => $self->serializer->encode($data)
+		Content_Type => $self->_serializer->content_type,
+		Content => $self->_serializer->serialize($data)
 	));
-	my $content = $res->code < 300 ? $self->serializer->decode($res->content) : {};
+	my $content = $res->code < 300 ? $self->_serializer->deserialize($res->content) : {};
 	return Catalyst::Model::REST::Response->new(
 		code => $res->code,
 		response => $res,
