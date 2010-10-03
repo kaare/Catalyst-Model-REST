@@ -38,15 +38,16 @@ sub _serializer {
     $self->{serializer}{$self->type} = Catalyst::Model::REST::Serializer->new(type => $type);
 }
 
-sub _build_ua {
+sub _ua {
     my ($self) = @_;
-    $self->{ua} = LWP::UserAgent->new;
+    $self->{ua} ||= LWP::UserAgent->new;
+    return $self->{ua};
 }
 
 sub post {
 	my ($self, $endpoint, $data) = @_;
 	my $uri = $self->server.$endpoint;
-	my $res = $self->ua->request(POST($uri,
+	my $res = $self->_ua->request(POST($uri,
 		Content_Type => $self->_serializer->content_type,
 		Content => $self->_serializer->serialize($data)
 	));
@@ -61,7 +62,7 @@ sub post {
 sub get {
 	my ($self, $endpoint, $data) = @_;
 	my $uri = $self->server.$endpoint;
-	my $res = $self->ua->request(GET($uri,
+	my $res = $self->_ua->request(GET($uri,
 		Content_Type => $self->_serializer->content_type,
 		Content => $self->_serializer->serialize($data)
 	));
@@ -76,7 +77,7 @@ sub get {
 sub put {
 	my ($self, $endpoint, $data) = @_;
 	my $uri = $self->server.$endpoint;
-	my $res = $self->ua->request(PUT($uri,
+	my $res = $self->_ua->request(PUT($uri,
 		Content_Type => $self->_serializer->content_type,
 		Content => $self->_serializer->serialize($data)
 	));
@@ -91,7 +92,7 @@ sub put {
 sub delete {
 	my ($self, $endpoint, $data) = @_;
 	my $uri = $self->server.$endpoint;
-	my $res = $self->ua->request(DELETE($uri,
+	my $res = $self->_ua->request(DELETE($uri,
 		Content_Type => $self->_serializer->content_type,
 		Content => $self->_serializer->serialize($data)
 	));
