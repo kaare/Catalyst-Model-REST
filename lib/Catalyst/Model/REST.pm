@@ -11,7 +11,7 @@ use Catalyst::Model::REST::Response;
 use LWP::UserAgent;
 use HTTP::Request::Common;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 has 'server' => (
     isa => 'Str',
