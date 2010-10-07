@@ -1,5 +1,10 @@
 Revision history for Catalyst-Model-REST
 
+0.07 7 October 2010
+	*NB* The attribute "type" now uses the content-type, so valid values are
+	application/json, application/xml, application/yaml.
+	More may come if needed.
+
 0.07 5 October 2010
 	Data::Serializable needs to be 0.40.1 for XML tests to pass
 

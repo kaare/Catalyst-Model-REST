@@ -6,9 +6,9 @@ use Moose::Util::TypeConstraints;
 with 'Data::Serializable';
 
 has 'type' => (
-    isa => enum ([qw/json xml yaml/]),
+    isa => enum ([qw{application/json application/xml application/yaml}]),
     is  => 'rw',
-	default => 'json',
+	default => 'application/json',
 	trigger   => \&_set_module
 );
 no Moose::Util::TypeConstraints;
@@ -16,17 +16,14 @@ no Moose::Util::TypeConstraints;
 no Moose;
 
 our %modules = (
-	json => {
+	'application/json' => {
 		module => 'JSON',
-		content_type => 'application/json',
 	},
-	xml => {
+	'application/xml' => {
 		module => 'XML::Simple',
-		content_type => 'application/xml',
 	},
-	yaml => {
+	'application/yaml' => {
 		module => 'YAML',
-		content_type => 'application/yaml',
 	},
 );
 
@@ -37,7 +34,7 @@ sub _set_module {
 
 sub content_type {
 	my ($self) = @_;
-	return $modules{$self->type}{content_type};
+	return $self->type;
 }
 
 1;

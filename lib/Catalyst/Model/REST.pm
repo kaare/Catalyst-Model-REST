@@ -2,6 +2,7 @@ package Catalyst::Model::REST;
 use 5.010;
 use Moose;
 use Moose::Util::TypeConstraints;
+use Try::Tiny;
 
 extends 'Catalyst::Model';
 
@@ -11,7 +12,7 @@ use Catalyst::Model::REST::Response;
 use LWP::UserAgent;
 use HTTP::Request::Common;
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 has 'server' => (
     isa => 'Str',
@@ -20,7 +21,7 @@ has 'server' => (
 	builder => '_build_server',
 );
 has 'type' => (
-    isa => enum ([qw/json yaml/]),
+    isa => enum ([qw{application/json application/xml application/yaml}]),
     is  => 'rw',
 	default => 'json',
 );
@@ -28,20 +29,26 @@ has 'type' => (
 no Moose::Util::TypeConstraints;
 
 sub _build_server {
-    my ($self) = @_;
-    $self->{server} ||= $self->config->{server} if $self->config->{server};
+	my ($self) = @_;
+	$self->{server} ||= $self->config->{server} if $self->config->{server};
 }
 
 sub _serializer {
-    my ($self) = @_;
-    my $type = $self->type;
-    $self->{serializer}{$self->type} = Catalyst::Model::REST::Serializer->new(type => $type);
+	my ($self, $type) = @_;
+	$type ||= $self->type;
+	try {
+		$self->{serializer}{$type} ||= Catalyst::Model::REST::Serializer->new(type => $type);
+	} catch {
+		# Spell it out
+		undef $self->{serializer}{$type};
+	};
+	return $self->{serializer}{$type};
 }
 
 sub _ua {
-    my ($self) = @_;
-    $self->{ua} ||= LWP::UserAgent->new;
-    return $self->{ua};
+	my ($self) = @_;
+	$self->{ua} ||= LWP::UserAgent->new;
+	return $self->{ua};
 }
 
 sub post {
@@ -51,7 +58,10 @@ sub post {
 		Content_Type => $self->_serializer->content_type,
 		Content => $self->_serializer->serialize($data)
 	));
-	my $content = $res->code < 300 ? $self->_serializer->deserialize($res->content) : {};
+	# Try to find a serializer for the result content
+	my $content_type = $res->content_type;
+	my $deserializer = $self->_serializer($content_type);
+	my $content = $deserializer ? $deserializer->deserialize($res->content) : {};
 	return Catalyst::Model::REST::Response->new(
 		code => $res->code,
 		response => $res,
@@ -66,7 +76,10 @@ sub get {
 		Content_Type => $self->_serializer->content_type,
 		Content => $self->_serializer->serialize($data)
 	));
-	my $content = $res->code < 300 ? $self->_serializer->deserialize($res->content) : {};
+	# Try to find a serializer for the result content
+	my $content_type = $res->content_type;
+	my $deserializer = $self->_serializer($content_type);
+	my $content = $deserializer ? $deserializer->deserialize($res->content) : {};
 	return Catalyst::Model::REST::Response->new(
 		code => $res->code,
 		response => $res,
@@ -81,7 +94,10 @@ sub put {
 		Content_Type => $self->_serializer->content_type,
 		Content => $self->_serializer->serialize($data)
 	));
-	my $content = $res->code < 300 ? $self->_serializer->deserialize($res->content) : {};
+	# Try to find a serializer for the result content
+	my $content_type = $res->content_type;
+	my $deserializer = $self->_serializer($content_type);
+	my $content = $deserializer ? $deserializer->deserialize($res->content) : {};
 	return Catalyst::Model::REST::Response->new(
 		code => $res->code,
 		response => $res,
@@ -96,7 +112,10 @@ sub delete {
 		Content_Type => $self->_serializer->content_type,
 		Content => $self->_serializer->serialize($data)
 	));
-	my $content = $res->code < 300 ? $self->_serializer->deserialize($res->content) : {};
+	# Try to find a serializer for the result content
+	my $content_type = $res->content_type;
+	my $deserializer = $self->_serializer($content_type);
+	my $content = $deserializer ? $deserializer->deserialize($res->content) : {};
 	return Catalyst::Model::REST::Response->new(
 		code => $res->code,
 		response => $res,
@@ -107,7 +126,7 @@ sub delete {
 __PACKAGE__->meta->make_immutable;
 
 1;
-
+__END__
 =pod
 
 =head1 NAME
@@ -119,7 +138,7 @@ Catalyst::Model::REST - REST model class for Catalyst
 	# model
 	__PACKAGE__->config(
 		server => 'http://localhost:3000',
-		type   => 'json',
+		type   => 'application/json',
 	);
 
 	# controller
@@ -166,5 +185,3 @@ Copyright 2010 Kaare Rasmussen, all rights reserved.
 This library is free software; you can redistribute it and/or modify it under the same terms as 
 Perl itself, either Perl version 5.8.8 or, at your option, any later version of Perl 5 you may 
 have available.
-
-=cut

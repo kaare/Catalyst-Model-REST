@@ -10,6 +10,7 @@ name 'Catalyst-Model-REST';
 all_from 'lib/Catalyst/Model/REST.pm';
 
 requires 'Moose';
+requires('Try::Tiny'				=> '0');
 requires('Catalyst::Model'			=> '0');
 requires('JSON::XS'					=> '2.2222');
 requires('LWP::UserAgent'			=> '0');
