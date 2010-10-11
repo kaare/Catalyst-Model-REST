@@ -1,6 +1,10 @@
 Revision history for Catalyst-Model-REST
 
-0.07 7 October 2010
+0.09 11 October 2010
+	Allow for no data to be sent
+	Include all methods, including DELETE
+
+0.08 7 October 2010
 	*NB* The attribute "type" now uses the content-type, so valid values are
 	application/json, application/xml, application/yaml.
 	More may come if needed.
