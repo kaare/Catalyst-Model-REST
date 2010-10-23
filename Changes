@@ -1,5 +1,8 @@
 Revision history for Catalyst-Model-REST
 
+0.10 23 October 2010
+	Use Dist::Zilla
+
 0.09 11 October 2010
 	Allow for no data to be sent
 	Include all methods, including DELETE
