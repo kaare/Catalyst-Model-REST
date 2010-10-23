@@ -12,8 +12,6 @@ use Catalyst::Model::REST::Response;
 use LWP::UserAgent;
 use HTTP::Request::Common qw/POST GET PUT DELETE/;
 
-our $VERSION = '0.09';
-
 has 'server' => (
     isa => 'Str',
     is  => 'rw',

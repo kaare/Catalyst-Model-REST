@@ -1,5 +1,8 @@
 Revision history for Catalyst-Model-REST
 
+0.11 xx October 2010
+	Let dzil handle version numbers in source files
+
 0.10 23 October 2010
 	Use Dist::Zilla
 
