@@ -125,6 +125,7 @@ __PACKAGE__->meta->make_immutable;
 
 1;
 __END__
+# ABSTRACT: REST model class for Catalyst
 =pod
 
 =head1 NAME
