@@ -3,7 +3,7 @@ use 5.010;
 use Moose;
 use Moose::Util::TypeConstraints;
 
-with 'Data::Serializable' => { -version => 0.40.1 };
+with 'Data::Serializable' => { -version => '0.40.1' };
 
 has 'type' => (
     isa => enum ([qw{application/json application/xml application/yaml}]),
