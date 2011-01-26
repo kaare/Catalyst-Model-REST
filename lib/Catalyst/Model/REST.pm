@@ -48,64 +48,11 @@ sub _ua {
 	return $self->{ua};
 }
 
-sub post {
-	my ($self, $endpoint, $data) = @_;
-	my $uri = $self->server.$endpoint;
-	my $res = defined $data ? $self->_ua->request('POST', $uri,
-		headers => { 'content-type' => $self->_serializer->content_type },
-		content => $self->_serializer->serialize($data)
-	) : $self->_ua->request('POST', $uri);
-	# Try to find a serializer for the result content
-	my $content_type = $res->content_type;
-	my $deserializer = $self->_serializer($content_type);
-	my $content = $deserializer ? $deserializer->deserialize($res->content) : {};
-	return Catalyst::Model::REST::Response->new(
-		code => $res->code,
-		response => $res,
-		data => $content,
-	);
-}
 
-sub get {
-	my ($self, $endpoint, $data) = @_;
+sub _call {
+	my ($self, $method, $endpoint, $data) = @_;
 	my $uri = $self->server.$endpoint;
-	my $res = defined $data ? $self->_ua->request('GET', $uri,
-		headers => { 'content-type' => $self->_serializer->content_type },
-		content => $self->_serializer->serialize($data)
-	) : $self->_ua->request('GET', $uri);
-	# Try to find a serializer for the result content
-	my $content_type = $res->content_type;
-	my $deserializer = $self->_serializer($content_type);
-	my $content = $deserializer ? $deserializer->deserialize($res->content) : {};
-	return Catalyst::Model::REST::Response->new(
-		code => $res->code,
-		response => $res,
-		data => $content,
-	);
-}
-
-sub put {
-	my ($self, $endpoint, $data) = @_;
-	my $uri = $self->server.$endpoint;
-	my $res = defined $data ? $self->_ua->request('PUT', $uri,
-		headers => { 'content-type' => $self->_serializer->content_type },
-		content => $self->_serializer->serialize($data)
-	) : $self->_ua->request('PUT', $uri);
-	# Try to find a serializer for the result content
-	my $content_type = $res->content_type;
-	my $deserializer = $self->_serializer($content_type);
-	my $content = $deserializer ? $deserializer->deserialize($res->content) : {};
-	return Catalyst::Model::REST::Response->new(
-		code => $res->code,
-		response => $res,
-		data => $content,
-	);
-}
-
-sub delete {
-	my ($self, $endpoint, $data) = @_;
-	my $uri = $self->server.$endpoint;
-	my $res = defined $data ? $self->_ua->request('DELETE', $uri,
+	my $res = defined $data ? $self->_ua->request($method, $uri,
 		headers => { 'content-type' => $self->_serializer->content_type },
 		content => $self->_serializer->serialize($data)
 	) : $self->_ua->request('DELETE', $uri);
@@ -118,6 +65,31 @@ sub delete {
 		response => $res,
 		data => $content,
 	);
+}
+
+sub get {
+	my $self = shift;
+	return $self->_call('GET', @_);
+}
+
+sub post {
+	my $self = shift;
+	return $self->_call('POST', @_);
+}
+
+sub put {
+	my $self = shift;
+	return $self->_call('PUT', @_);
+}
+
+sub delete {
+	my $self = shift;
+	return $self->_call('DELETE', @_);
+}
+
+sub options {
+	my $self = shift;
+	return $self->_call('OPTIONS', @_);
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -159,13 +131,20 @@ This model class makes REST connectivety easy.
 
 Called from Catalyst.
 
-=head2 post
+=head2 method methods
 
-=head2 get
+Catalyst::Model::REST accepts the standard HTTP 1.1 methods
 
-=head2 put
+	post
+	get
+	put
+	delete
+	options
 
-=head2 delete
+All methods take these parameters
+
+	url - The REST service
+	data - The data structure (hashref, arrayref) to send
 
 =head1 AUTHOR
 
