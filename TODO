@@ -7,8 +7,5 @@ Misc
   Handle situation when getting non-decoded content back
 - Serializers
   Is it possible to send json and receive yaml? Should I handle it?
-- Installer
-  Try dist:::zilla  
 - Find a way to overwrite request object so it will be possible to use in 
   controller tests (?)
-  Look at Catalyst::Test.

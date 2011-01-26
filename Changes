@@ -1,8 +1,10 @@
 Revision history for Catalyst-Model-REST
 
 {{$NEXT}}
+        Replace LWP with HTTP::Tiny
 
 0.13    2010-10-31 08:28:27 Europe/Copenhagen
+        Force dzil to require the correct version of Data::Serialized
 
 0.12    2010-10-30 11:46:47 Europe/Copenhagen
         Make dzil do more

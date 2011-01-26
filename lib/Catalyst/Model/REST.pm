@@ -3,14 +3,13 @@ use 5.010;
 use Moose;
 use Moose::Util::TypeConstraints;
 use Try::Tiny;
+use HTTP::Tiny;
 
 extends 'Catalyst::Model';
 
 use Carp qw(confess);
 use Catalyst::Model::REST::Serializer;
 use Catalyst::Model::REST::Response;
-use LWP::UserAgent;
-use HTTP::Request::Common qw/POST GET PUT DELETE/;
 
 has 'server' => (
     isa => 'Str',
@@ -45,17 +44,17 @@ sub _serializer {
 
 sub _ua {
 	my ($self) = @_;
-	$self->{ua} ||= LWP::UserAgent->new;
+	$self->{ua} ||= HTTP::Tiny->new;
 	return $self->{ua};
 }
 
 sub post {
 	my ($self, $endpoint, $data) = @_;
 	my $uri = $self->server.$endpoint;
-	my $res = defined $data ? $self->_ua->request(POST($uri,
-		Content_Type => $self->_serializer->content_type,
-		Content => $self->_serializer->serialize($data)
-	)) : $self->_ua->request(POST($uri));
+	my $res = defined $data ? $self->_ua->request('POST', $uri,
+		headers => { 'content-type' => $self->_serializer->content_type },
+		content => $self->_serializer->serialize($data)
+	) : $self->_ua->request('POST', $uri);
 	# Try to find a serializer for the result content
 	my $content_type = $res->content_type;
 	my $deserializer = $self->_serializer($content_type);
@@ -70,10 +69,10 @@ sub post {
 sub get {
 	my ($self, $endpoint, $data) = @_;
 	my $uri = $self->server.$endpoint;
-	my $res = defined $data ? $self->_ua->request(GET($uri,
-		Content_Type => $self->_serializer->content_type,
-		Content => $self->_serializer->serialize($data)
-	)) : $self->_ua->request(GET($uri));
+	my $res = defined $data ? $self->_ua->request('GET', $uri,
+		headers => { 'content-type' => $self->_serializer->content_type },
+		content => $self->_serializer->serialize($data)
+	) : $self->_ua->request('GET', $uri);
 	# Try to find a serializer for the result content
 	my $content_type = $res->content_type;
 	my $deserializer = $self->_serializer($content_type);
@@ -88,10 +87,10 @@ sub get {
 sub put {
 	my ($self, $endpoint, $data) = @_;
 	my $uri = $self->server.$endpoint;
-	my $res = defined $data ? $self->_ua->request(PUT($uri,
-		Content_Type => $self->_serializer->content_type,
-		Content => $self->_serializer->serialize($data)
-	)) : $self->_ua->request(PUT($uri));
+	my $res = defined $data ? $self->_ua->request('PUT', $uri,
+		headers => { 'content-type' => $self->_serializer->content_type },
+		content => $self->_serializer->serialize($data)
+	) : $self->_ua->request('PUT', $uri);
 	# Try to find a serializer for the result content
 	my $content_type = $res->content_type;
 	my $deserializer = $self->_serializer($content_type);
@@ -106,10 +105,10 @@ sub put {
 sub delete {
 	my ($self, $endpoint, $data) = @_;
 	my $uri = $self->server.$endpoint;
-	my $res = defined $data ? $self->_ua->request(DELETE($uri,
-		Content_Type => $self->_serializer->content_type,
-		Content => $self->_serializer->serialize($data)
-	)) : $self->_ua->request(DELETE($uri));
+	my $res = defined $data ? $self->_ua->request('DELETE', $uri,
+		headers => { 'content-type' => $self->_serializer->content_type },
+		content => $self->_serializer->serialize($data)
+	) : $self->_ua->request('DELETE', $uri);
 	# Try to find a serializer for the result content
 	my $content_type = $res->content_type;
 	my $deserializer = $self->_serializer($content_type);
