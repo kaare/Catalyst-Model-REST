@@ -7,7 +7,7 @@ has 'code' => (
     is  => 'ro',
 );
 has 'response' => (
-    isa => 'Object',
+    isa => 'HashRef',
     is  => 'ro',
 );
 has 'data' => (
@@ -27,16 +27,15 @@ Catalyst::Model::REST::Response - Response class for REST
 
 =head2 code
 
-Returns the http code of the request
+Returns the http status code of the request
 
 =head2 response
 
-Returns the response. Shouldn't ordinarily be used
+Returns the raw HTTP::Tiny response. Use this if you need more information than staus and content.
 
 =head2 data
 
-Returns the deserialized data. Returns an emåty hashref
-if the response was unsuccessful
+Returns the deserialized data. Returns an empty hashref if the response was unsuccessful
 
 =head1 AUTHOR
 

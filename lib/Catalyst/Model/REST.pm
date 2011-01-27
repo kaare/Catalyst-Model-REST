@@ -48,20 +48,19 @@ sub _ua {
 	return $self->{ua};
 }
 
-
 sub _call {
 	my ($self, $method, $endpoint, $data) = @_;
 	my $uri = $self->server.$endpoint;
-	my $res = defined $data ? $self->_ua->request($method, $uri,
+	my $res = defined $data ? $self->_ua->request($method, $uri, {
 		headers => { 'content-type' => $self->_serializer->content_type },
 		content => $self->_serializer->serialize($data)
-	) : $self->_ua->request('DELETE', $uri);
+	}) : $self->_ua->request($method, $uri);
 	# Try to find a serializer for the result content
-	my $content_type = $res->content_type;
+	my $content_type = $res->{headers}{content_type};
 	my $deserializer = $self->_serializer($content_type);
-	my $content = $deserializer ? $deserializer->deserialize($res->content) : {};
+	my $content = $deserializer ? $deserializer->deserialize($res->{content}) : {};
 	return Catalyst::Model::REST::Response->new(
-		code => $res->code,
+		code => $res->{status},
 		response => $res,
 		data => $content,
 	);
