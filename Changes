@@ -1,6 +1,8 @@
 Revision history for Catalyst-Model-REST
 
 {{$NEXT}}
+
+0.14    2011-01-27 12:28:50 Europe/Copenhagen
         Replace LWP with HTTP::Tiny
         Internal refactoring of methods
         New options method
