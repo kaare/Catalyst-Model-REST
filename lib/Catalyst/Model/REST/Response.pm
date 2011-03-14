@@ -31,7 +31,7 @@ Returns the http status code of the request
 
 =head2 response
 
-Returns the raw HTTP::Tiny response. Use this if you need more information than staus and content.
+Returns the raw HTTP::Tiny response. Use this if you need more information than status and content.
 
 =head2 data
 

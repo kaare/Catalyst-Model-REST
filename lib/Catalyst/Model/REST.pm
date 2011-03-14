@@ -55,6 +55,8 @@ sub _call {
 		headers => { 'content-type' => $self->_serializer->content_type },
 		content => $self->_serializer->serialize($data)
 	}) : $self->_ua->request($method, $uri);
+	return { code =>  $res->{status}, error => $res->{reason}} unless $res->{success};
+
 	# Try to find a serializer for the result content
 	my $content_type = $res->{headers}{content_type};
 	my $deserializer = $self->_serializer($content_type);
