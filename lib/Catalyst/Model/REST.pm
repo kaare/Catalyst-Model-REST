@@ -22,6 +22,7 @@ has 'type' => (
     is  => 'rw',
 	default => 'json',
 );
+has clientattrs => (isa => 'HashRef', is => 'ro', default => sub {return {} });
 
 no Moose::Util::TypeConstraints;
 
@@ -44,7 +45,7 @@ sub _serializer {
 
 sub _ua {
 	my ($self) = @_;
-	$self->{ua} ||= HTTP::Tiny->new;
+	$self->{ua} ||= HTTP::Tiny->new(%{$self->clientattrs});
 	return $self->{ua};
 }
 
@@ -61,7 +62,7 @@ sub _call {
 	# Try to find a serializer for the result content
 	my $content_type = $res->{headers}{content_type};
 	my $deserializer = $self->_serializer($content_type);
-	my $content = $deserializer ? $deserializer->deserialize($res->{content}) : {};
+	my $content = $deserializer && $res->{content} ? $deserializer->deserialize($res->{content}) : {};
 	return Catalyst::Model::REST::Response->new(
 		code => $res->{status},
 		response => $res,
@@ -109,8 +110,9 @@ Catalyst::Model::REST - REST model class for Catalyst
 
 	# model
 	__PACKAGE__->config(
-		server => 'http://localhost:3000',
-		type   => 'application/json',
+		server =>      'http://localhost:3000',
+		type   =>      'application/json',
+		clientattrs => {timeout => 5},
 	);
 
 	# controller
@@ -148,6 +150,25 @@ All methods take these parameters
 	url - The REST service
 	data - The data structure (hashref, arrayref) to send
 
+=head1 ATTRIBUTES
+
+=head2 server
+
+Url of the REST server.
+
+e.g. 'http://localhost:3000'
+
+=head2 type
+
+Mime content type,
+
+e.g. application/json
+
+=head2 'clientattrs'
+
+Attributes to feed HTTP::Tiny
+
+e.g. {timeout => 10}
 =head1 AUTHOR
 
 Kaare Rasmussen, <kaare at cpan dot com>
