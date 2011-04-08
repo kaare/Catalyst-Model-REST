@@ -1,12 +1,13 @@
 package Catalyst::Model::REST::Serializer;
 use 5.010;
+use Try::Tiny;
 use Moose;
 use Moose::Util::TypeConstraints;
 
 with 'Data::Serializable' => { -version => '0.40.1' };
 
 has 'type' => (
-    isa => enum ([qw{application/json application/xml application/yaml}]),
+    isa => enum ([qw{application/json application/xml application/yaml application/x-www-form-urlencoded}]),
     is  => 'rw',
 	default => 'application/json',
 	trigger   => \&_set_module
@@ -25,11 +26,25 @@ our %modules = (
 	'application/yaml' => {
 		module => 'YAML',
 	},
+	'application/x-www-form-urlencoded' => {
+		module => 'FORM',
+	},
 );
 
 sub _set_module {
 	my ($self, $type) = @_;
-	$self->serializer_module($modules{$type}{module});
+	return unless $modules{$type};
+
+	my $module = $modules{$type}{module};
+	return $module if $module eq 'FORM';
+
+	my $serializer;
+	try {
+		$serializer = $self->serializer_module($module);
+	} catch {
+		$serializer = undef;
+	};
+	return $serializer;
 }
 
 sub content_type {

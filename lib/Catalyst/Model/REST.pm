@@ -2,8 +2,8 @@ package Catalyst::Model::REST;
 use 5.010;
 use Moose;
 use Moose::Util::TypeConstraints;
-use Try::Tiny;
 use HTTP::Tiny;
+use URI::Escape;
 
 extends 'Catalyst::Model';
 
@@ -34,12 +34,7 @@ sub _build_server {
 sub _serializer {
 	my ($self, $type) = @_;
 	$type ||= $self->type;
-	try {
-		$self->{serializer}{$type} ||= Catalyst::Model::REST::Serializer->new(type => $type);
-	} catch {
-		# Spell it out
-		undef $self->{serializer}{$type};
-	};
+	$self->{serializer}{$type} ||= Catalyst::Model::REST::Serializer->new(type => $type);
 	return $self->{serializer}{$type};
 }
 
@@ -71,8 +66,13 @@ sub _call {
 }
 
 sub get {
-	my $self = shift;
-	return $self->_call('GET', @_);
+	my ($self, $endpoint, $data) = @_;
+	my $type = $self->type;
+	my $uri = $endpoint;
+	if ($self->{serializer}{$type} eq 'FORM' and my %data = %{ $data }) {
+		$uri .= '&' . join '?', map { uri_escape($_) . '=' . uri_escape($data{$_})} keys %data;
+	}
+	return $self->_call('GET', $uri);
 }
 
 sub post {
