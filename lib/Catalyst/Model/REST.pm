@@ -170,11 +170,12 @@ Mime content type,
 
 e.g. application/json
 
-=head2 'clientattrs'
+=head2 clientattrs
 
 Attributes to feed HTTP::Tiny
 
 e.g. {timeout => 10}
+
 =head1 AUTHOR
 
 Kaare Rasmussen, <kaare at cpan dot com>
