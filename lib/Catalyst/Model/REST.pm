@@ -47,9 +47,12 @@ sub _ua {
 sub _call {
 	my ($self, $method, $endpoint, $data) = @_;
 	my $uri = $self->server.$endpoint;
+	# If no data, just call endpoint (or uri if GET w/parameters)
+	# If data is a scalar, call endpoint with data as content (POST w/parameters)
+	# Otherwise, encode data
 	my $res = defined $data ? $self->_ua->request($method, $uri, {
 		headers => { 'content-type' => $self->_serializer->content_type },
-		content => $self->_serializer->serialize($data)
+		content => ref $data ? $self->_serializer->serialize($data) : $data
 	}) : $self->_ua->request($method, $uri);
 	# Return an error if status 5XX
 	return { code =>  $res->{status}, error => $res->{reason}} if $res->{status} > 499;
@@ -76,8 +79,12 @@ sub get {
 }
 
 sub post {
-	my $self = shift;
-	return $self->_call('POST', @_);
+	my ($self, $endpoint, $data) = @_;
+	if ($self->{serializer}{$type} eq 'FORM' and my %data = %{ $data }) {
+		my $content = join '?', map { uri_escape($_) . '=' . uri_escape($data{$_})} keys %data;
+		return $self->_call('POST', $endpoint, $content);
+	}
+	return $self->_call('PUT', @_);
 }
 
 sub put {
