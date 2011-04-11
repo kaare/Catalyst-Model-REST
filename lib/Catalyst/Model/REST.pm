@@ -18,7 +18,7 @@ has 'server' => (
 	builder => '_build_server',
 );
 has 'type' => (
-    isa => enum ([qw{application/json application/xml application/yaml}]),
+    isa => enum ([qw{application/json application/xml application/yaml application/x-www-form-urlencoded}]),
     is  => 'rw',
 	default => 'json',
 );
@@ -58,7 +58,7 @@ sub _call {
 	return { code =>  $res->{status}, error => $res->{reason}} if $res->{status} > 499;
 
 	# Try to find a serializer for the result content
-	my $content_type = $res->{headers}{content_type};
+	my $content_type = $res->{headers}{content_type} || $res->{headers}{'content-type'};
 	my $deserializer = $self->_serializer($content_type);
 	my $content = $deserializer && $res->{content} ? $deserializer->deserialize($res->{content}) : {};
 	return Catalyst::Model::REST::Response->new(
@@ -72,15 +72,16 @@ sub get {
 	my ($self, $endpoint, $data) = @_;
 	my $type = $self->type;
 	my $uri = $endpoint;
-	if ($self->{serializer}{$type} eq 'FORM' and my %data = %{ $data }) {
-		$uri .= '&' . join '?', map { uri_escape($_) . '=' . uri_escape($data{$_})} keys %data;
+	if ($self->{serializer}{$type}{module} eq 'FORM' and my %data = %{ $data }) {
+		$uri .= '?' . join '&', map { uri_escape($_) . '=' . uri_escape($data{$_})} keys %data;
 	}
 	return $self->_call('GET', $uri);
 }
 
 sub post {
 	my ($self, $endpoint, $data) = @_;
-	if ($self->{serializer}{$type} eq 'FORM' and my %data = %{ $data }) {
+	my $type = $self->type;
+	if ($self->{serializer}{$type}{module} eq 'FORM' and my %data = %{ $data }) {
 		my $content = join '?', map { uri_escape($_) . '=' . uri_escape($data{$_})} keys %data;
 		return $self->_call('POST', $endpoint, $content);
 	}
