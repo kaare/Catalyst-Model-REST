@@ -70,9 +70,8 @@ sub _call {
 
 sub get {
 	my ($self, $endpoint, $data) = @_;
-	my $type = $self->type;
 	my $uri = $endpoint;
-	if ($self->{serializer}{$type}{module} eq 'FORM' and my %data = %{ $data }) {
+	if ($self->type =~ /urlencoded/ and my %data = %{ $data }) {
 		$uri .= '?' . join '&', map { uri_escape($_) . '=' . uri_escape($data{$_})} keys %data;
 	}
 	return $self->_call('GET', $uri);
@@ -80,12 +79,11 @@ sub get {
 
 sub post {
 	my ($self, $endpoint, $data) = @_;
-	my $type = $self->type;
-	if ($self->{serializer}{$type}{module} eq 'FORM' and my %data = %{ $data }) {
+	if ($self->type =~ /urlencoded/ and my %data = %{ $data }) {
 		my $content = join '?', map { uri_escape($_) . '=' . uri_escape($data{$_})} keys %data;
 		return $self->_call('POST', $endpoint, $content);
 	}
-	return $self->_call('PUT', @_);
+	return $self->_call('POST', @_);
 }
 
 sub put {
