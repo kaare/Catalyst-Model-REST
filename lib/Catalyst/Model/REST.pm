@@ -80,7 +80,7 @@ sub get {
 sub post {
 	my ($self, $endpoint, $data) = @_;
 	if ($self->type =~ /urlencoded/ and my %data = %{ $data }) {
-		my $content = join '?', map { uri_escape($_) . '=' . uri_escape($data{$_})} keys %data;
+		my $content = join '&', map { uri_escape($_) . '=' . uri_escape($data{$_})} keys %data;
 		return $self->_call('POST', $endpoint, $content);
 	}
 	return $self->_call('POST', @_);
