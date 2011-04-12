@@ -2,7 +2,7 @@ Revision history for Catalyst-Model-REST
 
 {{$NEXT}}
  - Add clientattr to be able to set HTTP::Tiny attributes
- - URL encode GET data. Idea: Giovanni Pensa
+ - Special casing application/x-www-form-urlencoded. Idea and test: Giovanni Pensa
 
 0.15    2011-03-29 21:20:27 Europe/Copenhagen
  - Return an error if status 5XX
