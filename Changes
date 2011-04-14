@@ -1,6 +1,8 @@
 Revision history for Catalyst-Model-REST
 
 {{$NEXT}}
+
+0.16    2011-04-14 21:42:13 Europe/Copenhagen
  - Add clientattr to be able to set HTTP::Tiny attributes
  - Special casing application/x-www-form-urlencoded. Idea and test: Giovanni Pensa
 
