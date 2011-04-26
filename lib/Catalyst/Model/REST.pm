@@ -133,7 +133,23 @@ Catalyst::Model::REST - REST model class for Catalyst
 
 =head1 DESCRIPTION
 
-This model class makes REST connectivety easy.
+This Catalyst Model class makes REST connectivety easy.
+
+Catalyst::Model::REST will handle encoding and decoding when using the four HTTP verbs.
+
+	GET
+	PUT
+	POST
+	DELETE
+
+Currently Catalyst::Model::REST supports these encodings
+
+	application/json
+	application/x-www-form-urlencoded
+	application/xml
+	application/yaml
+
+x-www-form-urlencoded only works for GET and POST, and only for encoding, not decoding.
 
 =head1 METHODS
 
@@ -141,20 +157,20 @@ This model class makes REST connectivety easy.
 
 Called from Catalyst.
 
-=head2 method methods
+=head2 methods
 
-Catalyst::Model::REST accepts the standard HTTP 1.1 methods
+Catalyst::Model::REST implements the standard HTTP 1.1 verbs as methods
 
 	post
 	get
 	put
 	delete
-	options
 
 All methods take these parameters
 
 	url - The REST service
-	data - The data structure (hashref, arrayref) to send
+	data - The data structure (hashref, arrayref) to send. The data will be encoded
+	according to the value of the I<type> attribute.
 
 =head1 ATTRIBUTES
 
