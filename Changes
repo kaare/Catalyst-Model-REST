@@ -1,6 +1,8 @@
 Revision history for Catalyst-Model-REST
 
 {{$NEXT}}
+
+0.17    2011-06-07 14:33:13 Europe/Copenhagen
   - Fix calling parameters for calling w/o content data
   - Enhance documentation
   - Remove dependency for Data::Serializable. Makes CMR code cleaner.
