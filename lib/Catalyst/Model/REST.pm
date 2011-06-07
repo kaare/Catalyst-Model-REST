@@ -50,12 +50,16 @@ sub _call {
 	# If no data, just call endpoint (or uri if GET w/parameters)
 	# If data is a scalar, call endpoint with data as content (POST w/parameters)
 	# Otherwise, encode data
-	my $res = defined $data ? $self->_ua->request($method, $uri, {
+	my %options = (
 		headers => { 'content-type' => $self->_serializer->content_type },
-		content => ref $data ? $self->_serializer->serialize($data) : $data
-	}) : $self->_ua->request($method, $uri);
+	);
+	$options{content} = ref $data ? $self->_serializer->serialize($data) : $data if defined $data;
+	my $res = $self->_ua->request($method, $uri, %options);
 	# Return an error if status 5XX
-	return { code =>  $res->{status}, error => $res->{reason}} if $res->{status} > 499;
+	return Catalyst::Model::REST::Response->new(
+		code => $res->{status},
+		error => $res->{reason},
+	) if $res->{status} > 499;
 
 	# Try to find a serializer for the result content
 	my $content_type = $res->{headers}{content_type} || $res->{headers}{'content-type'};
@@ -78,7 +82,8 @@ sub get {
 }
 
 sub post {
-	my ($self, $endpoint, $data) = @_;
+	my $self = shift;
+	my ($endpoint, $data) = @_;
 	if ($self->type =~ /urlencoded/ and my %data = %{ $data }) {
 		my $content = join '&', map { uri_escape($_) . '=' . uri_escape($data{$_})} keys %data;
 		return $self->_call('POST', $endpoint, $content);
@@ -114,6 +119,8 @@ Catalyst::Model::REST - REST model class for Catalyst
 
 =head1 SYNOPSIS
 
+Use from a controller
+
 	# model
 	__PACKAGE__->config(
 		server =>      'http://localhost:3000',
@@ -130,6 +137,16 @@ Catalyst::Model::REST - REST model class for Catalyst
 		...
 	}
 
+For internal use
+
+       # model
+       sub model_foo {
+               my ($self) = @_;
+               my $res = $self->post('foo/bar/baz', {foo => 'bar'});
+               my $code = $res->code;
+               my $data = $res->data;
+               return $data if $code == 200;
+       }
 
 =head1 DESCRIPTION
 
@@ -172,7 +189,11 @@ All methods take these parameters
 	data - The data structure (hashref, arrayref) to send. The data will be encoded
 	according to the value of the I<type> attribute.
 
+All methods return a L<Catalyst::Model::REST::Response> object.
+
 =head1 ATTRIBUTES
+
+Attributes can be set in your application's configuration file. See L<Catalyst::Manual>.
 
 =head2 server
 

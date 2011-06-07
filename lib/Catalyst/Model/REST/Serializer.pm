@@ -4,15 +4,20 @@ use Try::Tiny;
 use Moose;
 use Moose::Util::TypeConstraints;
 
-with 'Data::Serializable' => { -version => '0.40.1' };
+use Data::Serializer;
 
 has 'type' => (
     isa => enum ([qw{application/json application/xml application/yaml application/x-www-form-urlencoded}]),
     is  => 'rw',
 	default => 'application/json',
-	trigger   => \&_set_module
 );
 no Moose::Util::TypeConstraints;
+has 'serializer' => (
+	isa => 'Data::Serializer',
+	is => 'ro',
+	default => \&_set_serializer,
+	lazy => 1,
+);
 
 no Moose;
 
@@ -31,25 +36,31 @@ our %modules = (
 	},
 );
 
-sub _set_module {
-	my ($self, $type) = @_;
-	return unless $modules{$type};
+sub _set_serializer {
+	my $self = shift;
+	return unless $modules{$self->type};
 
-	my $module = $modules{$type}{module};
+	my $module = $modules{$self->type}{module};
 	return $module if $module eq 'FORM';
 
-	my $serializer;
-	try {
-		$serializer = $self->serializer_module($module);
-	} catch {
-		$serializer = undef;
-	};
-	return $serializer;
+	return Data::Serializer->new(
+		serializer => $module,
+	);
 }
 
 sub content_type {
 	my ($self) = @_;
 	return $self->type;
+}
+
+sub serialize {
+	my ($self, $data) = @_;
+	return $self->serializer ? $self->serializer->raw_serialize($data) : undef;
+}
+
+sub deserialize {
+	my ($self, $data) = @_;
+	return $self->serializer ? $self->serializer->raw_deserialize($data) : undef;
 }
 
 1;
