@@ -1,6 +1,8 @@
 Revision history for Catalyst-Model-REST
 
 {{$NEXT}}
+
+0.18    2011-06-09 17:27:34 Europe/Copenhagen
   - Uri escape parameters for all GET calls
   - Fix test dependencies
 
