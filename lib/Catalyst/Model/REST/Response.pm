@@ -10,6 +10,10 @@ has 'response' => (
     isa => 'HashRef',
     is  => 'ro',
 );
+has 'error' => (
+    isa => 'Str',
+    is  => 'ro',
+);
 has 'data' => (
     isa => 'HashRef',
     is  => 'ro',
@@ -32,6 +36,10 @@ Returns the http status code of the request
 =head2 response
 
 Returns the raw HTTP::Tiny response. Use this if you need more information than status and content.
+
+=head2 error
+
+Returns the returned reason from HTTP::Tiny where the status is 500 or higher. 
 
 =head2 data
 

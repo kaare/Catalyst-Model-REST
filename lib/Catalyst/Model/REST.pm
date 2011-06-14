@@ -54,10 +54,11 @@ sub _call {
 		headers => { 'content-type' => $self->_serializer->content_type },
 	);
 	$options{content} = ref $data ? $self->_serializer->serialize($data) : $data if defined $data;
-	my $res = $self->_ua->request($method, $uri, %options);
+	my $res = $self->_ua->request($method, $uri, \%options);
 	# Return an error if status 5XX
 	return Catalyst::Model::REST::Response->new(
 		code => $res->{status},
+		response => $res,
 		error => $res->{reason},
 	) if $res->{status} > 499;
 
