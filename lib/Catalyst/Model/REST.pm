@@ -4,6 +4,7 @@ use Moose;
 use Moose::Util::TypeConstraints;
 use HTTP::Tiny;
 use URI::Escape;
+use Try::Tiny;
 
 extends 'Catalyst::Model';
 
@@ -20,7 +21,7 @@ has 'server' => (
 has 'type' => (
     isa => enum ([qw{application/json application/xml application/yaml application/x-www-form-urlencoded}]),
     is  => 'rw',
-	default => 'json',
+	default => 'application/json',
 );
 has clientattrs => (isa => 'HashRef', is => 'ro', default => sub {return {} });
 
@@ -34,7 +35,15 @@ sub _build_server {
 sub _serializer {
 	my ($self, $type) = @_;
 	$type ||= $self->type;
-	$self->{serializer}{$type} ||= Catalyst::Model::REST::Serializer->new(type => $type);
+	$type =~ s/;\s*?charset=.+$//i; #remove stuff like ;charset=utf8
+	try {
+		$self->{serializer}{$type} ||= Catalyst::Model::REST::Serializer->new(type => $type);
+	}
+	catch {
+		# Deal with real life content types like "text/xml;charset=ISO-8859-1"
+		warn "No serializer available for " . $type . " content. Trying default " . $self->type;
+		$self->{serializer}{$type} = Catalyst::Model::REST::Serializer->new(type => $self->type);
+	};
 	return $self->{serializer}{$type};
 }
 
@@ -54,10 +63,11 @@ sub _call {
 		headers => { 'content-type' => $self->_serializer->content_type },
 	);
 	$options{content} = ref $data ? $self->_serializer->serialize($data) : $data if defined $data;
-	my $res = $self->_ua->request($method, $uri, %options);
+	my $res = $self->_ua->request($method, $uri, \%options);
 	# Return an error if status 5XX
 	return Catalyst::Model::REST::Response->new(
 		code => $res->{status},
+		response => $res,
 		error => $res->{reason},
 	) if $res->{status} > 499;
 
