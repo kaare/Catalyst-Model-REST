@@ -1,6 +1,8 @@
 Revision history for Catalyst-Model-REST
 
 {{$NEXT}}
+
+0.19    2011-06-22 17:43:34 Europe/Copenhagen
   - Fix calling errors and remove charset from content_type (warming)
 
 0.18    2011-06-09 17:27:34 Europe/Copenhagen
