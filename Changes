@@ -1,6 +1,7 @@
 Revision history for Catalyst-Model-REST
 
 {{$NEXT}}
+  - Fix calling errors and remove charset from content_type (warming)
 
 0.18    2011-06-09 17:27:34 Europe/Copenhagen
   - Uri escape parameters for all GET calls
