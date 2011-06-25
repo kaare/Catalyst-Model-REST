@@ -2,8 +2,8 @@ use strict;
 use warnings;
 use Test::More tests => 16;
 
-eval 'use JSON::XS';
-plan skip_all => 'Install JSON::XS to run this test' if ($@);
+eval 'use JSON';
+plan skip_all => 'Install JSON to run this test' if ($@);
 
 BEGIN {
 	use_ok( 'Catalyst::Model::REST::Serializer' );

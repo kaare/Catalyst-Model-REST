@@ -54,7 +54,7 @@ sub _ua {
 }
 
 sub _call {
-	my ($self, $method, $endpoint, $data) = @_;
+	my ($self, $method, $endpoint, $data, $args) = @_;
 	my $uri = $self->server.$endpoint;
 	# If no data, just call endpoint (or uri if GET w/parameters)
 	# If data is a scalar, call endpoint with data as content (POST w/parameters)
@@ -72,9 +72,12 @@ sub _call {
 	) if $res->{status} > 499;
 
 	# Try to find a serializer for the result content
-	my $content_type = $res->{headers}{content_type} || $res->{headers}{'content-type'};
+	my $content_type = $args->{deserializer} || $res->{headers}{content_type} || $res->{headers}{'content-type'};
 	my $deserializer = $self->_serializer($content_type);
-	my $content = $deserializer && $res->{content} ? $deserializer->deserialize($res->{content}) : {};
+	# Try to deserialize
+	my $content = $deserializer && $res->{content} ?
+	 $deserializer->deserialize($res->{content}) :
+	{};
 	return Catalyst::Model::REST::Response->new(
 		code => $res->{status},
 		response => $res,
@@ -83,12 +86,12 @@ sub _call {
 }
 
 sub get {
-	my ($self, $endpoint, $data) = @_;
+	my ($self, $endpoint, $data, $args) = @_;
 	my $uri = $endpoint;
 	if ($self->type =~ /urlencoded/ and my %data = %{ $data }) {
 		$uri .= '?' . join '&', map { uri_escape($_) . '=' . uri_escape($data{$_})} keys %data;
 	}
-	return $self->_call('GET', $uri);
+	return $self->_call('GET', $uri, $args);
 }
 
 sub post {
@@ -197,7 +200,16 @@ All methods take these parameters
 
 	url - The REST service
 	data - The data structure (hashref, arrayref) to send. The data will be encoded
-	according to the value of the I<type> attribute.
+		according to the value of the I<type> attribute.
+	args - hashref with arguments to augment the way the call is handled.
+
+args - the optional argument parameter can have these entries
+
+	deserializer - if you KNOW that the content-type of the response is incorrect,
+	you can supply the correct content type, like
+
+	my $res = $self->post('foo/bar/baz', {foo => 'bar'}, {deserializer => 'application/yaml'});
+
 
 All methods return a L<Catalyst::Model::REST::Response> object.
 
