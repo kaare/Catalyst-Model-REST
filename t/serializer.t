@@ -1,9 +1,13 @@
 use strict;
 use warnings;
-use Test::More tests => 16;
+use Test::More;
 
 eval 'use JSON';
-plan skip_all => 'Install JSON to run this test' if ($@);
+if ($@) {
+	plan skip_all => 'Install JSON to run this test';
+} else {
+	plan tests => 16
+};
 
 BEGIN {
 	use_ok( 'Catalyst::Model::REST::Serializer' );

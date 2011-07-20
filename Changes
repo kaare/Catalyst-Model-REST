@@ -1,6 +1,8 @@
 Revision history for Catalyst-Model-REST
 
 {{$NEXT}}
+  - Changed Test requirement from JSON::XS to JSON
+  - Make serializer test more accurate
 
 0.20    2011-06-25 18:13:10 Europe/Copenhagen
   - New args parameter for all REST calls
