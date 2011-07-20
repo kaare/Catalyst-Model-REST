@@ -9,9 +9,7 @@ if ($@) {
 	plan tests => 16
 };
 
-BEGIN {
-	use_ok( 'Catalyst::Model::REST::Serializer' );
-}
+use_ok( 'Catalyst::Model::REST::Serializer' );
 
 my %resultdata = (
 	'application/json' => '{"foo":"bar"}',
