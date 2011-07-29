@@ -1,6 +1,7 @@
 Revision history for Catalyst-Model-REST
 
 {{$NEXT}}
+  - Fix error in GET call (Warming)
 
 0.21    2011-07-20 10:23:23 Europe/Copenhagen
   - Changed Test requirement from JSON::XS to JSON

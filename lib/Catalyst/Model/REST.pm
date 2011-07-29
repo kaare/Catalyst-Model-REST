@@ -91,7 +91,7 @@ sub get {
 	if ($self->type =~ /urlencoded/ and my %data = %{ $data }) {
 		$uri .= '?' . join '&', map { uri_escape($_) . '=' . uri_escape($data{$_})} keys %data;
 	}
-	return $self->_call('GET', $uri, $args);
+	return $self->_call('GET', $uri, $data, $args);
 }
 
 sub post {
