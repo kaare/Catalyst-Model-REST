@@ -88,18 +88,18 @@ sub _call {
 sub get {
 	my ($self, $endpoint, $data, $args) = @_;
 	my $uri = $endpoint;
-	if ($self->type =~ /urlencoded/ and my %data = %{ $data }) {
+	if (my %data = %{ $data }) {
 		$uri .= '?' . join '&', map { uri_escape($_) . '=' . uri_escape($data{$_})} keys %data;
 	}
-	return $self->_call('GET', $uri, $data, $args);
+	return $self->_call('GET', $uri, undef, $args);
 }
 
 sub post {
 	my $self = shift;
-	my ($endpoint, $data) = @_;
-	if (my %data = %{ $data }) {
+	my ($endpoint, $data, $args) = @_;
+	if ($self->type =~ /urlencoded/ and my %data = %{ $data }) {
 		my $content = join '&', map { uri_escape($_) . '=' . uri_escape($data{$_})} keys %data;
-		return $self->_call('POST', $endpoint, $content);
+		return $self->_call('POST', $endpoint, $content, $args);
 	}
 	return $self->_call('POST', @_);
 }
