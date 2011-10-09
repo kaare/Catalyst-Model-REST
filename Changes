@@ -2,6 +2,8 @@ Revision history for Catalyst-Model-REST
 
 {{$NEXT}}
 
+0.23    2011-10-09 16:19:03 Europe/Copenhagen
+
 0.22    2011-07-29 06:06:53 Europe/Copenhagen
   - Fix error in GET call (Warming)
 
