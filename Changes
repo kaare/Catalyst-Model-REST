@@ -1,6 +1,8 @@
 Revision history for Catalyst-Model-REST
 
 {{$NEXT}}
+  - Better handling of the return content. Perhaps the content isn't
+    deserializable
 
 0.23    2011-10-09 16:19:03 Europe/Copenhagen
 
