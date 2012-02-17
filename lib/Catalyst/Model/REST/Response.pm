@@ -7,7 +7,7 @@ has 'code' => (
     is  => 'ro',
 );
 has 'response' => (
-    isa => 'HashRef',
+    isa => 'HashRef | ArrayRef',
     is  => 'ro',
 );
 has 'error' => (

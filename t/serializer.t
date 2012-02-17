@@ -6,21 +6,32 @@ eval 'use JSON';
 if ($@) {
 	plan skip_all => 'Install JSON to run this test';
 } else {
-	plan tests => 16
+	plan tests => 25
 };
 
 use_ok( 'Catalyst::Model::REST::Serializer' );
 
 my %resultdata = (
-	'application/json' => '{"foo":"bar"}',
-	'application/xml' => '<opt foo="bar" />'."\n",
-	'application/yaml' => "---\nfoo: bar\n",
+	hash => {
+		'application/json' => '{"foo":"bar"}',
+		'application/xml' => '<opt foo="bar" />'."\n",
+		'application/yaml' => "---\nfoo: bar\n",
+	},
+	array => {
+		'application/json' => '["foo","bar"]',
+		'application/xml' => "<opt>\n  <anon>foo</anon>\n  <anon>bar</anon>\n</opt>\n",
+		'application/yaml' => "---\n- foo\n- bar\n",
+	},
 );
 for my $type (qw{application/json application/xml application/yaml}) {
-	my $data = {foo => 'bar'};
 	ok (my $serializer = Catalyst::Model::REST::Serializer->new(type => $type), "New $type serializer");
 	is($serializer->content_type, $type, 'Content Type');
-	ok(my $sdata = $serializer->serialize($data), 'Serialize');
-	is($sdata, $resultdata{$type}, 'Serialize data');
-	is_deeply($serializer->deserialize($sdata), $data, 'Deserialize');
+	my $hashdata = {foo => 'bar'};
+	ok(my $sdata = $serializer->serialize($hashdata), "Serialize hash $type");
+	is($sdata, $resultdata{hash}{$type}, 'Correct type');
+	is_deeply($serializer->deserialize($sdata), $hashdata, "Deserialize hash $type");
+	my $arraydata = [qw/foo bar/];
+	ok($sdata = $serializer->serialize($arraydata), "Serialize array $type");
+	is($sdata, $resultdata{array}{$type}, 'Correct type');
+	is_deeply($serializer->deserialize($sdata), $arraydata, "Deserialize array $type");
 }
