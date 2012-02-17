@@ -1,6 +1,8 @@
 Revision history for Catalyst-Model-REST
 
 {{$NEXT}}
+
+0.25    2012-02-17 20:47:06 Europe/Copenhagen
   - JSON data can be a hashref or an arrayref (Thanks to Alex Howarth for reporting)
 
 0.24    2011-10-10 19:23:36 Europe/Copenhagen
