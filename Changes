@@ -1,6 +1,8 @@
 Revision history for Catalyst-Model-REST
 
 {{$NEXT}}
+  - Move all functionality into Role::REST::Client.
+    This distribution is just a thin Catalyst::Model shell around that role
 
 0.26    2012-02-20 17:48:25 Europe/Copenhagen
 

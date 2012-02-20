@@ -51,7 +51,7 @@ For internal use
 
 =head1 DESCRIPTION
 
-This Catalyst Model class is a thin wrapper over L<Role::Model::Client>
+This Catalyst Model class is a thin wrapper over L<Role::REST::Client>
 
 Use this module if you need to talk to a REST server as a separate model.
 
